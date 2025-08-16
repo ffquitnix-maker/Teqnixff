@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Shop Teqnix Diamonds</title>
+  <style>
+    body { font-family: Tahoma; text-align: center; background:#f4f4f4; }
+    .card { background:#fff; width:320px; margin:20px auto; padding:20px;
+            border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+    button { padding:10px 18px; border:none; border-radius:8px;
+             background:#28a745; color:#fff; cursor:pointer; margin:5px 0;}
+    button:disabled{ background:#ccc; cursor:not-allowed; }
+    input{ padding:8px; border:1px solid #ccc; border-radius:6px; margin:5px; width:80%;}
+    hr{ margin:20px 0;}
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>مرحبا في Shop Teqnix Diamonds 💎</h2>
+    <p>إكمل المهام واربح نقاط!</p>
+    <p>نقاطك الحالية: <span id="points">0</span></p>
+
+    <!-- قسم العروض -->
+    <button onclick="completeOffer()">إكمل عرض 🔥</button>
+
+    <!-- قسم المتجر -->
+    <button id="redeemBtn" onclick="redeem()" disabled>
+      إشترِ 100 Diamonds (4 نقاط)
+    </button>
+
+    <!-- إدخال ID -->
+    <div id="idBox" style="display:none; margin-top:10px;">
+      <p>أدخل الـ ID متاعك:</p>
+      <input type="text" id="ffid" placeholder="ID Free Fire">
+      <button onclick="submitID()">تأكيد</button>
+    </div>
+
+    <!-- Referral -->
+    <hr>
+    <p>شارك مع صحابك واربح نقطة 🎁</p>
+    <input type="text" id="refLink" readonly>
+    <button onclick="copyLink()">📋 نسخ الرابط</button>
+  </div>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    emailjs.init("YOUR_EMAILJS_USERID"); // ضع هنا User ID متاع EmailJS
+
+    let points = 0;
+    const pointsSpan = document.getElementById("points");
+    const redeemBtn = document.getElementById("redeemBtn");
+    const refLink = document.getElementById("refLink");
+
+    // توليد لينك referral
+    const userID = Math.floor(Math.random()*100000);
+    refLink.value = window.location.origin + "?ref=" + userID;
+
+    function completeOffer(){
+      points++;
+      pointsSpan.innerText = points;
+      if(points >= 4){ redeemBtn.disabled = false; }
+    }
+
+    function redeem(){
+      document.getElementById("idBox").style.display = "block";
+    }
+
+    function submitID(){
+      const ffid = document.getElementById("ffid").value;
+      if(ffid){
+        alert("مبروك 🎉! تم إرسال طلب 100 Diamonds لحساب ID: " + ffid);
+        sendEmail(ffid); // إرسال الإيميل
+        points -= 4;
+        pointsSpan.innerText = points;
+        redeemBtn.disabled = true;
+        document.getElementById("idBox").style.display = "none";
+      }else{
+        alert("رجاء اكتب ID صحيح!");
+      }
+    }
+
+    function copyLink(){
+      refLink.select();
+      document.execCommand("copy");
+      alert("تم نسخ الرابط! ابعثو لصحابك واربح نقاط");
+    }
+
+    function sendEmail(ffid){
+      const templateParams = {
+        ffid: ffid,
+        diamonds: "100 Diamonds",
+        points: 4
+      };
+      emailjs.send('YOUR_SERVICE_ID','YOUR_TEMPLATE_ID', templateParams)
+      .then(function(response) {
+         console.log('SUCCESS!', response.status, response.text);
+      }, function(error) {
+         console.log('FAILED...', error);
+      });
+    }
+  </script>
+</body>
+</html>
